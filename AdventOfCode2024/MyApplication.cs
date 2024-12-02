@@ -21,37 +21,168 @@ namespace AdventOfCode2024
         public async Task RunProgram()
         {
             _logger.LogInformation("Running Program");
-            var list1 = new List<int>();
-            var list2 = new List<int>();
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day1-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
 
+            var reports = new List<List<int>>();
             foreach (var line in lines)
             {
                 var split = line.Split();
-                list1.Add(int.Parse(split[0]));
-                list2.Add(int.Parse(split[3]));
-            }
-            list1.Sort();
-            list2.Sort();
-
-            var simscoreByNum = new Dictionary<int, int>();
-            int totalSimScore = 0;
-
-            foreach (var number in list1)
-            {
-                if (simscoreByNum.TryGetValue(number, out var simScore))
+                var report = new List<int>();
+                foreach (var item in split)
                 {
-                    totalSimScore += simScore;
-                    continue;
+                    report.Add(int.Parse(item));
                 }
-                var count = list2.Where(x => x == number).Count();
-                simScore = number * count;
-                simscoreByNum[number] = simScore;
-                totalSimScore += simScore;
+                reports.Add(report);
+            }
+            var safeReportCount = 0;
+
+            foreach (var report in reports)
+            {
+                for (int i = 0; i < report.Count; i++)
+                {
+                    var copyList = report.ToList();
+                    copyList.RemoveAt(i);
+                    if (CheckDay2Report(copyList))
+                    {
+                        safeReportCount++;
+                        break;
+                    }
+                }
             }
 
-            Console.WriteLine(totalSimScore);
+            Console.WriteLine(safeReportCount);
+        }
+
+        public async Task Day2Part2()
+        {
+            _logger.LogInformation("Running Program");
+
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
+
+            var reports = new List<List<int>>();
+            foreach (var line in lines)
+            {
+                var split = line.Split();
+                var report = new List<int>();
+                foreach (var item in split)
+                {
+                    report.Add(int.Parse(item));
+                }
+                reports.Add(report);
+            }
+            var safeReportCount = 0;
+
+            foreach (var report in reports)
+            {
+                for (int i = 0; i < report.Count; i++)
+                {
+                    var copyList = report.ToList();
+                    copyList.RemoveAt(i);
+                    if (CheckDay2Report(copyList))
+                    {
+                        safeReportCount++;
+                        break;
+                    }
+                }
+            }
+
+            Console.WriteLine(safeReportCount);
+        }
+
+        private bool CheckDay2Report(List<int> report)
+        {
+            var minchange = 1;
+            var maxChange = 3;
+            var asc = false;
+            var desc = false;
+            for (int i = 0; i < report.Count - 1; i++)
+            {
+                var difference = report[i] - report[i + 1];
+                if (difference > 0)
+                {
+                    desc = true;
+                }
+                else if (difference < 0)
+                {
+                    asc = true;
+                }
+                else
+                {
+                    break;
+                }
+                var posDifference = Math.Abs(difference);
+                if (posDifference < minchange || posDifference > maxChange)
+                {
+                    break;
+                }
+                if (asc && desc)
+                {
+                    break;
+                }
+                if (i == report.Count - 2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task Day2Part1()
+        {
+            _logger.LogInformation("Running Program");
+
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
+
+            var reports = new List<List<int>>();
+            foreach (var line in lines)
+            {
+                var split = line.Split();
+                var report = new List<int>();
+                foreach (var item in split)
+                {
+                    report.Add(int.Parse(item));
+                }
+                reports.Add(report);
+            }
+            var safeReportCount = 0;
+            var minchange = 1;
+            var maxChange = 3;
+
+            foreach (var report in reports)
+            {
+                var asc = false;
+                var desc = false;
+                for (int i = 0; i < report.Count - 1; i++)
+                {
+                    var difference = report[i] - report[i + 1];
+                    if (difference > 0)
+                    {
+                        desc = true;
+                    }
+                    else if (difference < 0)
+                    {
+                        asc = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    var posDifference = Math.Abs(difference);
+                    if (posDifference < minchange || posDifference > maxChange)
+                    {
+                        break;
+                    }
+                    if (asc && desc)
+                    {
+                        break;
+                    }
+                    if (i == report.Count - 2)
+                    {
+                        safeReportCount++;
+                    }
+                }
+            }
         }
 
         public async Task Day1Part2()
