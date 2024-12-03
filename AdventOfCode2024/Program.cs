@@ -38,19 +38,19 @@ namespace AdventOfCode2024
             {
                 var services = serviceScope.ServiceProvider;
 
-                try
-                {
+                //try
+                //{
                     var myService = services.GetRequiredService<MyApplication>();
                     await myService.RunProgram();
-                }
-                catch (Exception ex)
-                {
-                    Log.Fatal(ex, $"ERROR: {ex.Message}");
-                }
-                finally
-                {
-                    Log.CloseAndFlush();
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    Log.Fatal(ex, $"ERROR: {ex.Message}");
+                //}
+                //finally
+                //{
+                //    Log.CloseAndFlush();
+                //}
             }
         }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AdventOfCode2024
@@ -22,36 +23,92 @@ namespace AdventOfCode2024
         {
             _logger.LogInformation("Running Program");
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
+            var total = 0;
+            bool enabled = true;
 
-            var reports = new List<List<int>>();
-            foreach (var line in lines)
-            {
-                var split = line.Split();
-                var report = new List<int>();
-                foreach (var item in split)
-                {
-                    report.Add(int.Parse(item));
-                }
-                reports.Add(report);
-            }
-            var safeReportCount = 0;
+            Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don\'t\(\)");
 
-            foreach (var report in reports)
+            var matches = regex.Matches(content);
+
+            foreach (Match match in matches)
             {
-                for (int i = 0; i < report.Count; i++)
+                switch (match.Value)
                 {
-                    var copyList = report.ToList();
-                    copyList.RemoveAt(i);
-                    if (CheckDay2Report(copyList))
-                    {
-                        safeReportCount++;
+                    case "do()":
+                        enabled = true;
                         break;
-                    }
+                    case "don't()":
+                        enabled = false;
+                        break;
+                    default:
+                        if (enabled)
+                        {
+                            var firstNum = int.Parse(match.Groups[1].Value);
+                            var secondNum = int.Parse(match.Groups[2].Value);
+                            total += firstNum * secondNum;
+                        }
+                        break;
                 }
             }
 
-            Console.WriteLine(safeReportCount);
+            Console.WriteLine(total);
+        }
+
+        public async Task Day3P2()
+        {
+            _logger.LogInformation("Running Program");
+
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
+            var total = 0;
+            bool enabled = true;
+
+            Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don\'t\(\)");
+
+            var matches = regex.Matches(content);
+
+            foreach (Match match in matches)
+            {
+                switch (match.Value)
+                {
+                    case "do()":
+                        enabled = true;
+                        break;
+                    case "don't()":
+                        enabled = false;
+                        break;
+                    default:
+                        if (enabled)
+                        {
+                            var firstNum = int.Parse(match.Groups[1].Value);
+                            var secondNum = int.Parse(match.Groups[2].Value);
+                            total += firstNum * secondNum;
+                        }
+                        break;
+                }
+            }
+
+            Console.WriteLine(total);
+        }
+
+        public async Task Day3P1()
+        {
+            _logger.LogInformation("Running Program");
+
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
+            var total = 0;
+
+            Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)");
+
+            var matches = regex.Matches(content);
+            foreach (Match match in matches)
+            {
+                var firstNum = int.Parse(match.Groups[1].Value);
+                var secondNum = int.Parse(match.Groups[2].Value);
+                total += firstNum * secondNum;
+            }
+
+            Console.WriteLine(total);
         }
 
         public async Task Day2Part2()
