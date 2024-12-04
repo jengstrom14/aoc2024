@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration.CommandLine;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,33 +23,172 @@ namespace AdventOfCode2024
         public async Task RunProgram()
         {
             _logger.LogInformation("Running Program");
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
 
-            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
             var total = 0;
-            bool enabled = true;
+            var rowCount = lines.Length;
+            var colCount = lines[0].Length;
 
-            Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don\'t\(\)");
-
-            var matches = regex.Matches(content);
-
-            foreach (Match match in matches)
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
-                switch (match.Value)
+                for (int columnIndex = 0; columnIndex < colCount; columnIndex++)
                 {
-                    case "do()":
-                        enabled = true;
-                        break;
-                    case "don't()":
-                        enabled = false;
-                        break;
-                    default:
-                        if (enabled)
+                    var charToCheck = lines[rowIndex][columnIndex];
+                    if (charToCheck != 'M' && charToCheck != 'S')
+                    {
+                        continue;
+                    }
+
+                    if (rowIndex <= rowCount - 3 && columnIndex <= colCount - 3)
+                    {
+                        if (lines[rowIndex + 1][columnIndex + 1] == 'A' &&
+
+                            ((lines[rowIndex][columnIndex] == 'M' && lines[rowIndex + 2][columnIndex + 2] == 'S') ||
+                            (lines[rowIndex][columnIndex] == 'S' && lines[rowIndex + 2][columnIndex + 2] == 'M')) &&
+
+                            ((lines[rowIndex][columnIndex + 2] == 'M' && lines[rowIndex + 2][columnIndex] == 'S') ||
+                            (lines[rowIndex][columnIndex + 2] == 'S' && lines[rowIndex + 2][columnIndex] == 'M')))
                         {
-                            var firstNum = int.Parse(match.Groups[1].Value);
-                            var secondNum = int.Parse(match.Groups[2].Value);
-                            total += firstNum * secondNum;
+                            total++;
                         }
-                        break;
+                    }
+                }
+            }
+
+            Console.WriteLine(total);
+        }
+
+        public async Task Day4P2()
+        {
+            _logger.LogInformation("Running Program");
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
+
+            var total = 0;
+            var rowCount = lines.Length;
+            var colCount = lines[0].Length;
+
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            {
+                for (int columnIndex = 0; columnIndex < colCount; columnIndex++)
+                {
+                    var charToCheck = lines[rowIndex][columnIndex];
+                    if (charToCheck != 'M' && charToCheck != 'S')
+                    {
+                        continue;
+                    }
+
+                    if (rowIndex <= rowCount - 3 && columnIndex <= colCount - 3)
+                    {
+                        if (lines[rowIndex + 1][columnIndex + 1] == 'A' &&
+
+                            ((lines[rowIndex][columnIndex] == 'M' && lines[rowIndex + 2][columnIndex + 2] == 'S') ||
+                            (lines[rowIndex][columnIndex] == 'S' && lines[rowIndex + 2][columnIndex + 2] == 'M')) &&
+
+                            ((lines[rowIndex][columnIndex + 2] == 'M' && lines[rowIndex + 2][columnIndex] == 'S') ||
+                            (lines[rowIndex][columnIndex + 2] == 'S' && lines[rowIndex + 2][columnIndex] == 'M')))
+                        {
+                            total++;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine(total);
+        }
+        
+        public async Task Day4P1()
+        {
+            _logger.LogInformation("Running Program");
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
+
+            var total = 0;
+            var rowCount = lines.Length;
+            var colCount = lines[0].Length;
+
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            {
+                for (int columnIndex = 0; columnIndex < colCount; columnIndex++)
+                {
+                    var charToCheck = lines[rowIndex][columnIndex];
+                    if (charToCheck != 'X')
+                    {
+                        continue;
+                    }
+
+                    //check in the following order
+                    //W, NW, N, NE, E, SE, S, SW
+
+                    //W
+                    if (columnIndex >= 3)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex][columnIndex - 1]}{lines[rowIndex][columnIndex - 2]}{lines[rowIndex][columnIndex - 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //NW
+                    if (rowIndex >= 3 && columnIndex >= 3)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex - 1][columnIndex - 1]}{lines[rowIndex - 2][columnIndex - 2]}{lines[rowIndex - 3][columnIndex - 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //N
+                    if (rowIndex >= 3)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex - 1][columnIndex]}{lines[rowIndex - 2][columnIndex]}{lines[rowIndex - 3][columnIndex]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //NE
+                    if (rowIndex >= 3 && columnIndex <= colCount - 4)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex - 1][columnIndex + 1]}{lines[rowIndex - 2][columnIndex + 2]}{lines[rowIndex - 3][columnIndex + 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //E
+                    if (columnIndex <= colCount - 4)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex][columnIndex + 1]}{lines[rowIndex][columnIndex + 2]}{lines[rowIndex][columnIndex + 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //SE
+                    if (rowIndex <= rowCount - 4 && columnIndex <= colCount - 4)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex + 1][columnIndex + 1]}{lines[rowIndex + 2][columnIndex + 2]}{lines[rowIndex + 3][columnIndex + 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //S
+                    if (rowIndex <= rowCount - 4)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex + 1][columnIndex]}{lines[rowIndex + 2][columnIndex]}{lines[rowIndex + 3][columnIndex]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
+
+                    //SW
+                    if (rowIndex <= rowCount - 4 && columnIndex >= 3)
+                    {
+                        if ($"{lines[rowIndex][columnIndex]}{lines[rowIndex + 1][columnIndex - 1]}{lines[rowIndex + 2][columnIndex - 2]}{lines[rowIndex + 3][columnIndex - 3]}" == "XMAS")
+                        {
+                            total++;
+                        }
+                    }
                 }
             }
 
