@@ -18,6 +18,7 @@ namespace AdventOfCode2024.Days
             public bool Visited { get; set; }
             public int XCoord { get; set; }
             public int YCoord { get; set; }
+            public List<Dude.Direction> DirsTravelled { get; set; }
         }
 
         internal class Dude
@@ -53,6 +54,16 @@ namespace AdventOfCode2024.Days
                         break;
                 }
             }
+
+            public Dude Copy()
+            {
+                return new Dude()
+                {
+                    XCoord = XCoord,
+                    YCoord = YCoord,
+                    Heading = Heading,
+                };
+            }
         }
 
         private static Tuple<Dude, List<List<Space>>> CreateBoard()
@@ -75,6 +86,7 @@ namespace AdventOfCode2024.Days
                                 Visited = false,
                                 XCoord = j,
                                 YCoord = i,
+                                DirsTravelled = [],
                             });
                             break;
                         case '#':
@@ -84,6 +96,7 @@ namespace AdventOfCode2024.Days
                                 Visited = false,
                                 XCoord = j,
                                 YCoord = i,
+                                DirsTravelled = [],
                             });
                             break;
                         case '^':
@@ -93,6 +106,7 @@ namespace AdventOfCode2024.Days
                                 Visited = true,
                                 XCoord = j,
                                 YCoord = i,
+                                DirsTravelled = [Dude.Direction.North],
                             };
 
                             row.Add(space);
@@ -112,8 +126,32 @@ namespace AdventOfCode2024.Days
         public static void Day6P2()
         {
             var board = CreateBoard();
-            var guy = board.Item1;
-            var map = board.Item2;
+            var origGuy = board.Item1;
+            var origMap = board.Item2;
+
+            var guy = origGuy.Copy();
+            var map = new List<List<Space>>();
+            foreach (var row in origMap)
+            {
+                var tempRow = new List<Space>();
+                foreach (var space in row)
+                {
+                    var dt = new List<Dude.Direction>();
+                    foreach(var d in space.DirsTravelled)
+                    {
+                        dt.Add(d);
+                    }
+                    tempRow.Add(new()
+                    {
+                        XCoord = space.XCoord,
+                        YCoord = space.YCoord,
+                        Type = space.Type,
+                        Visited = space.Visited,
+                        DirsTravelled = dt,
+                    });
+                }
+                map.Add(tempRow);
+            }
 
             //traverse once to see which positions might need to change
             var keepMoving = true;
@@ -131,9 +169,29 @@ namespace AdventOfCode2024.Days
             //change each empty space to an obstacle and see if it creates a cycle
             foreach (var spaceThatMatters in spacesThatMatter)
             {
-                var newBoard = CreateBoard();
-                guy = newBoard.Item1;
-                var modifiedMap = newBoard.Item2;
+                guy = origGuy.Copy();
+                var modifiedMap = new List<List<Space>>();
+                foreach (var row in origMap)
+                {
+                    var tempRow = new List<Space>();
+                    foreach (var space in row)
+                    {
+                        var dt = new List<Dude.Direction>();
+                        foreach (var d in space.DirsTravelled)
+                        {
+                            dt.Add(d);
+                        }
+                        tempRow.Add(new()
+                        {
+                            XCoord = space.XCoord,
+                            YCoord = space.YCoord,
+                            Type = space.Type,
+                            Visited = space.Visited,
+                            DirsTravelled = dt,
+                        });
+                    }
+                    modifiedMap.Add(tempRow);
+                }
 
                 var rowIndex = spaceThatMatters.YCoord;
                 var columnIndex = spaceThatMatters.XCoord;
@@ -147,42 +205,18 @@ namespace AdventOfCode2024.Days
                 //Console.WriteLine($"Changing row index {rowIndex} column index: {columnIndex} to an obstruction");
                 modifiedMap[rowIndex][columnIndex].Type = Space.SpaceType.Obstruction;
 
-                var normalDude = new Dude()
+                var move = true;
+                while (move)
                 {
-                    Heading = guy.Heading,
-                    XCoord = guy.XCoord,
-                    YCoord = guy.YCoord,
-                };
-                var fastDude = new Dude()
-                {
-                    Heading = guy.Heading,
-                    XCoord = guy.XCoord,
-                    YCoord = guy.YCoord,
-                };
-
-                while (true)
-                {
-                    Traverse(normalDude, modifiedMap);
-                    var fastContinues = Traverse(fastDude, modifiedMap);
-                    if (fastContinues == false)
-                    {
-                        break;
-                    }
-                    fastContinues = Traverse(fastDude, modifiedMap);
-                    if (fastContinues == false)
-                    {
-                        break;
-                    }
-                    if (normalDude.XCoord == fastDude.XCoord &&
-                        normalDude.YCoord == fastDude.YCoord &&
-                        normalDude.Heading == fastDude.Heading)
+                    move = Traverse(guy, modifiedMap);
+                    var dirsTravelled = modifiedMap[guy.YCoord][guy.XCoord].DirsTravelled;
+                    if (dirsTravelled.GroupBy(x => x).Where(y => y.Count() > 1).Any())
                     {
                         cyclesCount++;
-                        break;
+                        move = false;
                     }
                 }
             }
-
             Console.WriteLine(cyclesCount);
         }
 
@@ -254,6 +288,7 @@ namespace AdventOfCode2024.Days
                     nextSpace.Visited = true;
                     dude.XCoord = nextSpace.XCoord;
                     dude.YCoord = nextSpace.YCoord;
+                    nextSpace.DirsTravelled.Add(dude.Heading);
                     break;
                 case Space.SpaceType.Obstruction:
                     dude.Rotate();
