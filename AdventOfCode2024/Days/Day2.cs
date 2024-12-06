@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2024.Days
 {
@@ -81,7 +79,7 @@ namespace AdventOfCode2024.Days
             return false;
         }
 
-        public async Task Day2Part1()
+        public static void Day2Part1()
         {
             var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2.input"));
 
@@ -134,6 +132,7 @@ namespace AdventOfCode2024.Days
                     }
                 }
             }
+            Console.WriteLine(safeReportCount);
         }
     }
 }

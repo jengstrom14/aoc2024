@@ -1,17 +1,14 @@
-﻿using AdventOfCode2024.Policies;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2024
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder();
             BuildConfig(builder);
@@ -26,10 +23,6 @@ namespace AdventOfCode2024
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddHttpClient(config["HttpClientImmediate"])
-                    .AddPolicyHandler(policy => new ClientPolicy().ImmediateHttpRetry);
-                    services.AddHttpClient(config["HttpClientBackoff"])
-                    .AddPolicyHandler(policy => new ClientPolicy().ExponentialHttpRetry);
                     services.AddScoped<MyApplication>();
                 }).UseSerilog()
                 .Build();
@@ -38,19 +31,8 @@ namespace AdventOfCode2024
             {
                 var services = serviceScope.ServiceProvider;
 
-                //try
-                //{
-                    var myService = services.GetRequiredService<MyApplication>();
-                     myService.RunProgram();
-                //}
-                //catch (Exception ex)
-                //{
-                //    Log.Fatal(ex, $"ERROR: {ex.Message}");
-                //}
-                //finally
-                //{
-                //    Log.CloseAndFlush();
-                //}
+                var myService = services.GetRequiredService<MyApplication>();
+                myService.RunProgram();
             }
         }
 

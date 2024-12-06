@@ -1,11 +1,7 @@
-﻿using Serilog.Parsing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2024.Days
 {
@@ -247,7 +243,7 @@ namespace AdventOfCode2024.Days
             switch (dude.Heading)
             {
                 case Dude.Direction.West:
-                    if(dude.XCoord == 0)
+                    if (dude.XCoord == 0)
                     {
                         //exits map
                         return false;
@@ -255,7 +251,7 @@ namespace AdventOfCode2024.Days
                     nextSpace = map[dude.YCoord][dude.XCoord - 1];
                     break;
                 case Dude.Direction.North:
-                    if(dude.YCoord == 0)
+                    if (dude.YCoord == 0)
                     {
                         //exits map
                         return false;
@@ -263,7 +259,7 @@ namespace AdventOfCode2024.Days
                     nextSpace = map[dude.YCoord - 1][dude.XCoord];
                     break;
                 case Dude.Direction.East:
-                    if(dude.XCoord == map[0].Count - 1)
+                    if (dude.XCoord == map[0].Count - 1)
                     {
                         //exits map
                         return false;
@@ -271,7 +267,7 @@ namespace AdventOfCode2024.Days
                     nextSpace = map[dude.YCoord][dude.XCoord + 1];
                     break;
                 case Dude.Direction.South:
-                    if(dude.YCoord == map.Count - 1)
+                    if (dude.YCoord == map.Count - 1)
                     {
                         //exits map
                         return false;

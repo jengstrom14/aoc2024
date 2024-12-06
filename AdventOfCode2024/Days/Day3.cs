@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2024.Days
 {
@@ -44,7 +40,7 @@ namespace AdventOfCode2024.Days
             Console.WriteLine(total);
         }
 
-        public async Task Day3P1()
+        public static void Day3P1()
         {
             var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3.input"));
             var total = 0;
