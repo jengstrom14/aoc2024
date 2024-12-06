@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog.Parsing;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,6 +57,129 @@ namespace AdventOfCode2024.Days
                         break;
                 }
             }
+        }
+        public static void Day6P2()
+        {
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6-input.txt"));
+
+            var map = new List<List<Space>>();
+            var guy = new Dude();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var row = new List<Space>();
+                for (int j = 0; j < lines[i].Length; j++)
+                {
+                    switch (lines[i][j])
+                    {
+                        case '.':
+                            row.Add(new()
+                            {
+                                Type = Space.SpaceType.Empty,
+                                Visited = false,
+                                XCoord = j,
+                                YCoord = i,
+                            });
+                            break;
+                        case '#':
+                            row.Add(new()
+                            {
+                                Type = Space.SpaceType.Obstruction,
+                                Visited = false,
+                                XCoord = j,
+                                YCoord = i,
+                            });
+                            break;
+                        case '^':
+                            var space = new Space()
+                            {
+                                Type = Space.SpaceType.Empty,
+                                Visited = true,
+                                XCoord = j,
+                                YCoord = i,
+                            };
+
+                            row.Add(space);
+                            guy.XCoord = j;
+                            guy.YCoord = i;
+                            guy.Heading = Dude.Direction.North;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                map.Add(row);
+            }
+
+            var cyclesCount = 0;
+            //change each empty space to an obstacle and see if it creates a cycle
+            for (int rowIndex = 0; rowIndex< map.Count; rowIndex++)
+            {
+                for (int columnIndex = 0; columnIndex < map[0].Count; columnIndex++)
+                {
+                    var modifiedMap = new List<List<Space>>();
+                    foreach (var row in map)
+                    {
+                        var tempRow = new List<Space>();
+                        foreach (var space in row)
+                        {
+                            tempRow.Add(new()
+                            {
+                                Type = space.Type,
+                                Visited = false,
+                                XCoord = space.XCoord,
+                                YCoord = space.YCoord,
+                            });
+                        }
+                        modifiedMap.Add(tempRow);
+                    }
+
+                    if (modifiedMap[rowIndex][columnIndex].Type == Space.SpaceType.Obstruction ||
+                        (rowIndex == guy.YCoord && columnIndex == guy.XCoord))
+                    {
+                        continue;
+                    }
+
+                    //Console.WriteLine($"Changing row index {rowIndex} column index: {columnIndex} to an obstruction");
+                    modifiedMap[rowIndex][columnIndex].Type = Space.SpaceType.Obstruction;
+
+                    var normalDude = new Dude()
+                    {
+                        Heading = guy.Heading,
+                        XCoord = guy.XCoord,
+                        YCoord = guy.YCoord,
+                    };
+                    var fastDude = new Dude()
+                    {
+                        Heading = guy.Heading,
+                        XCoord = guy.XCoord,
+                        YCoord = guy.YCoord,
+                    };
+
+                    while (true)
+                    {
+                        Traverse(normalDude, modifiedMap);
+                        var fastContinues = Traverse(fastDude, modifiedMap);
+                        if (fastContinues == false)
+                        {
+                            break;
+                        }
+                        fastContinues = Traverse(fastDude, modifiedMap);
+                        if (fastContinues == false)
+                        {
+                            break;
+                        }
+                        if (normalDude.XCoord == fastDude.XCoord &&
+                            normalDude.YCoord == fastDude.YCoord &&
+                            normalDude.Heading == fastDude.Heading)
+                        {
+                            cyclesCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine(cyclesCount);
         }
 
         public static void Day6P1()

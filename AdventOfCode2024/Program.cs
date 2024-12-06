@@ -41,7 +41,7 @@ namespace AdventOfCode2024
                 //try
                 //{
                     var myService = services.GetRequiredService<MyApplication>();
-                    await myService.RunProgram();
+                     myService.RunProgram();
                 //}
                 //catch (Exception ex)
                 //{
