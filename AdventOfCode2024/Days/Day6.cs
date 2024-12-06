@@ -123,13 +123,8 @@ namespace AdventOfCode2024.Days
             return new Tuple<Dude, List<List<Space>>>(guy, map);
         }
 
-        public static void Day6P2()
+        private static List<List<Space>> CopyMap(List<List<Space>> origMap)
         {
-            var board = CreateBoard();
-            var origGuy = board.Item1;
-            var origMap = board.Item2;
-
-            var guy = origGuy.Copy();
             var map = new List<List<Space>>();
             foreach (var row in origMap)
             {
@@ -152,6 +147,17 @@ namespace AdventOfCode2024.Days
                 }
                 map.Add(tempRow);
             }
+            return map;
+        }
+
+        public static void Day6P2()
+        {
+            var board = CreateBoard();
+            var origGuy = board.Item1;
+            var origMap = board.Item2;
+
+            var guy = origGuy.Copy();
+            var map = CopyMap(origMap);
 
             //traverse once to see which positions might need to change
             var keepMoving = true;
@@ -170,28 +176,7 @@ namespace AdventOfCode2024.Days
             foreach (var spaceThatMatters in spacesThatMatter)
             {
                 guy = origGuy.Copy();
-                var modifiedMap = new List<List<Space>>();
-                foreach (var row in origMap)
-                {
-                    var tempRow = new List<Space>();
-                    foreach (var space in row)
-                    {
-                        var dt = new List<Dude.Direction>();
-                        foreach (var d in space.DirsTravelled)
-                        {
-                            dt.Add(d);
-                        }
-                        tempRow.Add(new()
-                        {
-                            XCoord = space.XCoord,
-                            YCoord = space.YCoord,
-                            Type = space.Type,
-                            Visited = space.Visited,
-                            DirsTravelled = dt,
-                        });
-                    }
-                    modifiedMap.Add(tempRow);
-                }
+                var modifiedMap = CopyMap(origMap);
 
                 var rowIndex = spaceThatMatters.YCoord;
                 var columnIndex = spaceThatMatters.XCoord;
