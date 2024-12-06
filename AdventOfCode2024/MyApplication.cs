@@ -2,9 +2,11 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,45 +25,156 @@ namespace AdventOfCode2024
         public async Task RunProgram()
         {
             _logger.LogInformation("Running Program");
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
-
-            var total = 0;
-            var rowCount = lines.Length;
-            var colCount = lines[0].Length;
-
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            Day5P1();
+        }
+        
+        public void Day5P2()
+        {
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5-input.txt"));
+            var earlierThan = new Dictionary<int, List<int>>();
+            var laterThan = new Dictionary<int, List<int>>();
+            var secondPart = false;
+            var pageSets = new List<List<int>>();
+            foreach (var line in lines)
             {
-                for (int columnIndex = 0; columnIndex < colCount; columnIndex++)
+                if (line.Equals(string.Empty))
                 {
-                    var charToCheck = lines[rowIndex][columnIndex];
-                    if (charToCheck != 'M' && charToCheck != 'S')
+                    secondPart = true;
+                    continue;
+                }
+
+                if (!secondPart)
+                {
+                    var splitLine = line.Split('|');
+                    var left = int.Parse(splitLine[0]);
+                    var right = int.Parse(splitLine[1]);
+                    if (!laterThan.TryGetValue(right, out var earlierList))
                     {
-                        continue;
+                        laterThan[right] = [];
+                        earlierList = laterThan[right];
                     }
-
-                    if (rowIndex <= rowCount - 3 && columnIndex <= colCount - 3)
+                    earlierList.Add(left);
+                    if (!earlierThan.TryGetValue(left, out var laterList))
                     {
-                        if (lines[rowIndex + 1][columnIndex + 1] == 'A' &&
-
-                            ((lines[rowIndex][columnIndex] == 'M' && lines[rowIndex + 2][columnIndex + 2] == 'S') ||
-                            (lines[rowIndex][columnIndex] == 'S' && lines[rowIndex + 2][columnIndex + 2] == 'M')) &&
-
-                            ((lines[rowIndex][columnIndex + 2] == 'M' && lines[rowIndex + 2][columnIndex] == 'S') ||
-                            (lines[rowIndex][columnIndex + 2] == 'S' && lines[rowIndex + 2][columnIndex] == 'M')))
-                        {
-                            total++;
-                        }
+                        earlierThan[left] = [];
+                        laterList = earlierThan[left];
                     }
+                    laterList.Add(right);
+                }
+                else
+                {
+                    var pageSet = new List<int>();
+                    var splitLine = line.Split(',');
+                    foreach(var pageNum in splitLine)
+                    {
+                        pageSet.Add(int.Parse(pageNum));
+                    }
+                    pageSets.Add(pageSet);
                 }
             }
+            var middleValueSum = 0;
+            foreach (var pageSet in pageSets)
+            {
+                if (InOrder(laterThan, pageSet))
+                {
+                    continue;
+                }
 
-            Console.WriteLine(total);
+                //var sorted = Resort(pageSet, earlierThan);
+                middleValueSum += pageSet[(pageSet.Count / 2)];
+            }
+            Console.WriteLine(middleValueSum);
+        }
+
+        //private List<int> Resort(List<int> pageSet, Dictionary<int,List<int>> earlierRules)
+        //{
+        //    //get first page
+        //    var page = pageSet[0];
+            
+        //}
+
+        public void Day5P1()
+        {
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5-input.txt"));
+            var earlierThan = new Dictionary<int, List<int>>();
+            //var laterThan = new Dictionary<int, List<int>>();
+            var secondPart = false;
+            var pageSets = new List<List<int>>();
+            foreach (var line in lines)
+            {
+                if (line.Equals(string.Empty))
+                {
+                    secondPart = true;
+                    continue;
+                }
+
+                if (!secondPart)
+                {
+                    var splitLine = line.Split('|');
+                    var left = int.Parse(splitLine[0]);
+                    var right = int.Parse(splitLine[1]);
+                    //if (!laterThan.TryGetValue(right, out var earlierList))
+                    //{
+                    //    laterThan[right] = [];
+                    //    earlierList = laterThan[right];
+                    //}
+                    //earlierList.Add(left);
+                    if (!earlierThan.TryGetValue(left, out var laterList))
+                    {
+                        earlierThan[left] = [];
+                        laterList = earlierThan[left];
+                    }
+                    laterList.Add(right);
+                }
+                else
+                {
+                    var pageSet = new List<int>();
+                    var splitLine = line.Split(',');
+                    foreach(var pageNum in splitLine)
+                    {
+                        pageSet.Add(int.Parse(pageNum));
+                    }
+                    pageSets.Add(pageSet);
+                }
+            }
+            var middleValueSum = 0;
+            foreach (var pageSet in pageSets)
+            {
+                if (!InOrder(earlierThan, pageSet))
+                {
+                    continue;
+                }
+
+                middleValueSum += pageSet[(pageSet.Count / 2)];
+            }
+            Console.WriteLine(middleValueSum);
+        }
+
+        private static bool InOrder(Dictionary<int, List<int>> earlierThanRules, List<int> pageSetToCheck)
+        {
+            var pageSet = pageSetToCheck.ToList();
+            pageSet.Reverse();
+            var unallowedFurtherPages = new List<int>();
+            foreach (var page in pageSet)
+            {
+                if (unallowedFurtherPages.Contains(page))
+                {
+                    return false;
+                }
+
+                if (!earlierThanRules.TryGetValue(page, out var pageNumsThatAreNotAllowedAfter))
+                {
+                    continue;
+                }
+                unallowedFurtherPages.AddRange(pageNumsThatAreNotAllowedAfter);
+            }
+            return true;
         }
 
         public async Task Day4P2()
         {
             _logger.LogInformation("Running Program");
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4-input.txt"));
 
             var total = 0;
             var rowCount = lines.Length;
@@ -99,7 +212,7 @@ namespace AdventOfCode2024
         public async Task Day4P1()
         {
             _logger.LogInformation("Running Program");
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day4-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4-input.txt"));
 
             var total = 0;
             var rowCount = lines.Length;
@@ -199,7 +312,7 @@ namespace AdventOfCode2024
         {
             _logger.LogInformation("Running Program");
 
-            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3-input.txt"));
             var total = 0;
             bool enabled = true;
 
@@ -235,7 +348,7 @@ namespace AdventOfCode2024
         {
             _logger.LogInformation("Running Program");
 
-            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "day3-input.txt"));
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3-input.txt"));
             var total = 0;
 
             Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)");
@@ -255,7 +368,7 @@ namespace AdventOfCode2024
         {
             _logger.LogInformation("Running Program");
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2-input.txt"));
 
             var reports = new List<List<int>>();
             foreach (var line in lines)
@@ -329,7 +442,7 @@ namespace AdventOfCode2024
         {
             _logger.LogInformation("Running Program");
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day2-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2-input.txt"));
 
             var reports = new List<List<int>>();
             foreach (var line in lines)
@@ -388,7 +501,7 @@ namespace AdventOfCode2024
             var list1 = new List<int>();
             var list2 = new List<int>();
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day1-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1-input.txt"));
 
             foreach (var line in lines)
             {
@@ -424,7 +537,7 @@ namespace AdventOfCode2024
             var list1 = new List<int>();
             var list2 = new List<int>();
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "day1-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1-input.txt"));
 
             foreach (var line in lines)
             {
