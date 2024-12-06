@@ -12,7 +12,7 @@ namespace AdventOfCode2024.Days
     {
         public static void Day3P2()
         {
-            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3-input.txt"));
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3.input"));
             var total = 0;
             bool enabled = true;
 
@@ -46,7 +46,7 @@ namespace AdventOfCode2024.Days
 
         public async Task Day3P1()
         {
-            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3-input.txt"));
+            var content = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Inputs", "day3.input"));
             var total = 0;
 
             Regex regex = new Regex(@"mul\((\d{1,3}),(\d{1,3})\)");

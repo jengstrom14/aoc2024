@@ -14,7 +14,7 @@ namespace AdventOfCode2024.Days
             var list1 = new List<int>();
             var list2 = new List<int>();
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1.input"));
 
             foreach (var line in lines)
             {
@@ -49,7 +49,7 @@ namespace AdventOfCode2024.Days
             var list1 = new List<int>();
             var list2 = new List<int>();
 
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day1.input"));
 
             foreach (var line in lines)
             {

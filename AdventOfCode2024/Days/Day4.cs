@@ -11,7 +11,7 @@ namespace AdventOfCode2024.Days
     {
         public static void Day4P2()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4.input"));
 
             var total = 0;
             var rowCount = lines.Length;
@@ -48,7 +48,7 @@ namespace AdventOfCode2024.Days
         
         public static void Day4P1()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day4.input"));
 
             var total = 0;
             var rowCount = lines.Length;

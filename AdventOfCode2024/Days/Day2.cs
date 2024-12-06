@@ -11,7 +11,7 @@ namespace AdventOfCode2024.Days
     {
         public static void Day2Part2()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2.input"));
 
             var reports = new List<List<int>>();
             foreach (var line in lines)
@@ -83,7 +83,7 @@ namespace AdventOfCode2024.Days
 
         public async Task Day2Part1()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day2.input"));
 
             var reports = new List<List<int>>();
             foreach (var line in lines)

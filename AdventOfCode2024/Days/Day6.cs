@@ -60,7 +60,7 @@ namespace AdventOfCode2024.Days
         }
         public static void Day6P2()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6.input"));
 
             var map = new List<List<Space>>();
             var guy = new Dude();
@@ -184,7 +184,7 @@ namespace AdventOfCode2024.Days
 
         public static void Day6P1()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6.input"));
 
             var map = new List<List<Space>>();
             var guy = new Dude();

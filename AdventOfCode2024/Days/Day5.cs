@@ -11,7 +11,7 @@ namespace AdventOfCode2024.Days
     {
         public static void Day5P2()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5.input"));
             var earlierThan = new Dictionary<int, List<int>>();
             var laterThan = new Dictionary<int, List<int>>();
             var secondPart = false;
@@ -76,7 +76,7 @@ namespace AdventOfCode2024.Days
 
         public static void Day5P1()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5-input.txt"));
+            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day5.input"));
             var earlierThan = new Dictionary<int, List<int>>();
             //var laterThan = new Dictionary<int, List<int>>();
             var secondPart = false;
