@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration.CommandLine;
+﻿using AdventOfCode2024.Days;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace AdventOfCode2024
         public async Task RunProgram()
         {
             _logger.LogInformation("Running Program");
-            Day5P1();
+            Day6.Day6P1();
         }
         
         public void Day5P2()
