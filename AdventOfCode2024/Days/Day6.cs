@@ -54,7 +54,8 @@ namespace AdventOfCode2024.Days
                 }
             }
         }
-        public static void Day6P2()
+
+        private static Tuple<Dude, List<List<Space>>> CreateBoard()
         {
             var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6.input"));
 
@@ -105,72 +106,79 @@ namespace AdventOfCode2024.Days
                 }
                 map.Add(row);
             }
+            return new Tuple<Dude, List<List<Space>>>(guy, map);
+        }
+
+        public static void Day6P2()
+        {
+            var board = CreateBoard();
+            var guy = board.Item1;
+            var map = board.Item2;
+
+            //traverse once to see which positions might need to change
+            var keepMoving = true;
+            while (keepMoving)
+            {
+                keepMoving = Traverse(guy, map);
+            }
+            var spacesThatMatter = new List<Space>();
+            foreach (var row in map)
+            {
+                spacesThatMatter.AddRange(row.Where(x => x.Visited));
+            }
 
             var cyclesCount = 0;
             //change each empty space to an obstacle and see if it creates a cycle
-            for (int rowIndex = 0; rowIndex< map.Count; rowIndex++)
+            foreach (var spaceThatMatters in spacesThatMatter)
             {
-                for (int columnIndex = 0; columnIndex < map[0].Count; columnIndex++)
+                var newBoard = CreateBoard();
+                guy = newBoard.Item1;
+                var modifiedMap = newBoard.Item2;
+
+                var rowIndex = spaceThatMatters.YCoord;
+                var columnIndex = spaceThatMatters.XCoord;
+
+                if (modifiedMap[rowIndex][columnIndex].Type == Space.SpaceType.Obstruction ||
+                    (rowIndex == guy.YCoord && columnIndex == guy.XCoord))
                 {
-                    var modifiedMap = new List<List<Space>>();
-                    foreach (var row in map)
+                    continue;
+                }
+
+                //Console.WriteLine($"Changing row index {rowIndex} column index: {columnIndex} to an obstruction");
+                modifiedMap[rowIndex][columnIndex].Type = Space.SpaceType.Obstruction;
+
+                var normalDude = new Dude()
+                {
+                    Heading = guy.Heading,
+                    XCoord = guy.XCoord,
+                    YCoord = guy.YCoord,
+                };
+                var fastDude = new Dude()
+                {
+                    Heading = guy.Heading,
+                    XCoord = guy.XCoord,
+                    YCoord = guy.YCoord,
+                };
+
+                while (true)
+                {
+                    Traverse(normalDude, modifiedMap);
+                    var fastContinues = Traverse(fastDude, modifiedMap);
+                    if (fastContinues == false)
                     {
-                        var tempRow = new List<Space>();
-                        foreach (var space in row)
-                        {
-                            tempRow.Add(new()
-                            {
-                                Type = space.Type,
-                                Visited = false,
-                                XCoord = space.XCoord,
-                                YCoord = space.YCoord,
-                            });
-                        }
-                        modifiedMap.Add(tempRow);
+                        break;
                     }
-
-                    if (modifiedMap[rowIndex][columnIndex].Type == Space.SpaceType.Obstruction ||
-                        (rowIndex == guy.YCoord && columnIndex == guy.XCoord))
+                    fastContinues = Traverse(fastDude, modifiedMap);
+                    if (fastContinues == false)
                     {
-                        continue;
+                        break;
                     }
-
-                    //Console.WriteLine($"Changing row index {rowIndex} column index: {columnIndex} to an obstruction");
-                    modifiedMap[rowIndex][columnIndex].Type = Space.SpaceType.Obstruction;
-
-                    var normalDude = new Dude()
+                    if (normalDude.XCoord == fastDude.XCoord &&
+                        normalDude.YCoord == fastDude.YCoord &&
+                        normalDude.Heading == fastDude.Heading)
                     {
-                        Heading = guy.Heading,
-                        XCoord = guy.XCoord,
-                        YCoord = guy.YCoord,
-                    };
-                    var fastDude = new Dude()
-                    {
-                        Heading = guy.Heading,
-                        XCoord = guy.XCoord,
-                        YCoord = guy.YCoord,
-                    };
-
-                    while (true)
-                    {
-                        Traverse(normalDude, modifiedMap);
-                        var fastContinues = Traverse(fastDude, modifiedMap);
-                        if (fastContinues == false)
-                        {
-                            break;
-                        }
-                        fastContinues = Traverse(fastDude, modifiedMap);
-                        if (fastContinues == false)
-                        {
-                            break;
-                        }
-                        if (normalDude.XCoord == fastDude.XCoord &&
-                            normalDude.YCoord == fastDude.YCoord &&
-                            normalDude.Heading == fastDude.Heading)
-                        {
-                            cyclesCount++;
-                            break;
-                        }
+                        cyclesCount++;
+                        break;
                     }
                 }
             }
@@ -180,47 +188,9 @@ namespace AdventOfCode2024.Days
 
         public static void Day6P1()
         {
-            var lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "Inputs", "day6.input"));
-
-            var map = new List<List<Space>>();
-            var guy = new Dude();
-            for (int i = 0; i < lines.Length; i++)
-            {
-                var row = new List<Space>();
-                for (int j = 0; j < lines[i].Length; j++)
-                {
-                    switch (lines[i][j])
-                    {
-                        case '.':
-                            row.Add(new()
-                            {
-                                Type = Space.SpaceType.Empty,
-                                Visited = false,
-                                XCoord = j,
-                                YCoord = i,
-                            });
-                            break;
-                        case '#':
-                            row.Add(new()
-                            {
-                                Type = Space.SpaceType.Obstruction,
-                                Visited = false,
-                                XCoord = j,
-                                YCoord = i,
-                            });
-                            break;
-                        case '^':
-                            row.Add(new() { Type = Space.SpaceType.Empty, Visited = true });
-                            guy.XCoord = j;
-                            guy.YCoord = i;
-                            guy.Heading = Dude.Direction.North;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                map.Add(row);
-            }
+            var board = CreateBoard();
+            var guy = board.Item1;
+            var map = board.Item2;
 
             var keepMoving = true;
             while (keepMoving)
