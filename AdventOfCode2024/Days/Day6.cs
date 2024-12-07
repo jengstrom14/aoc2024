@@ -128,24 +128,9 @@ namespace AdventOfCode2024.Days
             var map = new List<List<Space>>();
             foreach (var row in origMap)
             {
-                var tempRow = new List<Space>();
-                foreach (var space in row)
-                {
-                    var dt = new List<Dude.Direction>();
-                    foreach(var d in space.DirsTravelled)
-                    {
-                        dt.Add(d);
-                    }
-                    tempRow.Add(new()
-                    {
-                        XCoord = space.XCoord,
-                        YCoord = space.YCoord,
-                        Type = space.Type,
-                        Visited = space.Visited,
-                        DirsTravelled = dt,
-                    });
-                }
-                map.Add(tempRow);
+                var tempRow = new Space[row.Count];
+                row.CopyTo(tempRow);
+                map.Add(tempRow.ToList());
             }
             return map;
         }
@@ -158,6 +143,7 @@ namespace AdventOfCode2024.Days
 
             var guy = origGuy.Copy();
             var map = CopyMap(origMap);
+            map[0][0].Visited = true;
 
             //traverse once to see which positions might need to change
             var keepMoving = true;
@@ -218,7 +204,7 @@ namespace AdventOfCode2024.Days
             }
 
             var visitedCount = 0;
-            foreach(var row in map)
+            foreach (var row in map)
             {
                 visitedCount += row.Where(x => x.Visited).Count();
             }

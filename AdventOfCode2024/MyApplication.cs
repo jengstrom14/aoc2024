@@ -1,6 +1,8 @@
 ﻿using AdventOfCode2024.Days;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode2024
 {
@@ -51,6 +53,10 @@ namespace AdventOfCode2024
             //Console.WriteLine("part 2");
             //Day5.Day5P2();
             //Console.WriteLine();
+
+            Console.WriteLine("day 5");
+            Day5_2.Day5();
+            Console.WriteLine();
 
             Console.WriteLine("day 6");
             Console.WriteLine("part 1");
